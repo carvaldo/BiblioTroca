@@ -1,0 +1,23 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bibliotroca
+    stdin_open: true
+    tty: true
+    ports:
+      - "8000:8000"
+      - "9003:9003"
+      - "5173:5173"
+    volumes:
+      - .:/var/www/html
+    networks:
+      - docker_default
+    restart: no
+volumes:
+  mysql_data:
+    external: true
+networks:
+    docker_default:
+      external: true

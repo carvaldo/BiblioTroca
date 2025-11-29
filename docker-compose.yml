@@ -11,7 +11,7 @@ services:
       - "9003:9003"
       - "5173:5173"
     volumes:
-      - .:/var/www/html
+      - ./app:/var/www/html
     networks:
       - docker_default
     restart: no

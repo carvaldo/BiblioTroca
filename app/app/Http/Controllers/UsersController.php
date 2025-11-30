@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Daos\UserDao;
 use App\Errors\AppException;
-use App\Errors\Users\UserNotFoundException;
-use App\Errors\Users\WrongPasswordException;
 use App\Http\Controllers\Cases\UsersCases;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;

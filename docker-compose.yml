@@ -11,10 +11,22 @@ services:
       - "9003:9003"
       - "5173:5173"
     volumes:
-      - ./app:/var/www/html
+      - type: bind
+        source: ./app
+        target: /var/www/html
     networks:
       - docker_default
     restart: no
+  mongodb:
+    container_name: mongodb
+    image: mongodb/mongodb-community-server:8.0-ubi8
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=mm3Ck868jJ
+    ports:
+      - "27017:27017"
+    networks:
+      - docker_default
 volumes:
   mysql_data:
     external: true

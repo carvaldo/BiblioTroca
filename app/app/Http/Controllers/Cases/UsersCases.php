@@ -8,18 +8,17 @@ use App\Errors\Users\WrongPasswordException;
 use App\Models\User;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class UsersCases
 {
-    private UserDao $userDao;
+    private UserDao $dao;
 
     public function __construct(UserDao $dao)
     {
-        $this->userDao = $dao;
+        $this->$dao = $dao;
     }
 
     /**
@@ -28,11 +27,7 @@ class UsersCases
      * @throws ValidationException
      */
     public function create(array $validated) {
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => $validated['password'],
-        ]);
+        $user = $this->dao->create($validated);
         return $user->createToken('api-token')->plainTextToken;
     }
 
@@ -46,7 +41,7 @@ class UsersCases
     public function authenticate(string $email, string $password): User
     {
         try {
-            $user = $this->userDao->findByEmail($email);
+            $user = $this->dao->findByEmail($email);
         } catch (ModelNotFoundException $e) {
             throw new UserNotFoundException(['email' => $email], $e);
         }

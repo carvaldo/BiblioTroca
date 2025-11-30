@@ -16,4 +16,13 @@ class UserDao
     {
         return User::where('email', $email)->firstOrFail();
     }
+
+    public function create(array $fields): User
+    {
+        return User::create([
+            'name' => $fields['name'],
+            'email' => $fields['email'],
+            'password' => $fields['password'],
+        ]);
+    }
 }

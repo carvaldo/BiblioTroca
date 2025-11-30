@@ -61,6 +61,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN composer global require laravel/installer
 RUN echo 'export PATH="$PATH:$HOME/.config/composer/vendor/bin"' >> ~/.bashrc
 
+# MongoDB Driver
+RUN pecl install mongodb && docker-php-ext-enable mongodb
+
 EXPOSE 8000 9003
 
 # Define diretório de trabalho

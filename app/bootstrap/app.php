@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Middlewares\PlainTextDefaultContentType;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Support\Facades\RateLimiter;
@@ -17,20 +19,22 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // EnsureFrontendRequestsAreStateful Mantém autenticação web via sessão em caso de aplicação web. Entretanto,
+        // o restante da aplicação deve ser tratado como stateless, afim de manter compatibilidade com demais clientes.
         // API
         $middleware->api([
             EnsureFrontendRequestsAreStateful::class,
-            'throttle:api',
             SubstituteBindings::class,
-        ]);
+            PlainTextDefaultContentType::class
+        ])
+            ->convertEmptyStringsToNull()
+            ->throttleApi();
     })->booting(function () {
+        // Limita quantidade de requisições por minuto por usuário ou ip
         RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(3)
-                ->response(function (Request $request, array $headers) {
-                    return response('This will be handy for Rate limiters on API routes', 429, $headers);
-                });
+            $limit = Limit::perMinute(60);
+            return $request->user() ? $limit->by($request->user()->id) : $limit->by($request->ip());
         });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
     })->create();

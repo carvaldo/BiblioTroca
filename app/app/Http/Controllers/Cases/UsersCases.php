@@ -18,7 +18,7 @@ class UsersCases
 
     public function __construct(UserDao $dao)
     {
-        $this->$dao = $dao;
+        $this->dao = $dao;
     }
 
     /**

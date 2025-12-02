@@ -48,6 +48,7 @@ class UsersCases
         if (!Hash::check($password, $user->password)) {
             throw new WrongPasswordException();
         }
+        $this->dao->registerLogin($user);
         return $user;
     }
 }

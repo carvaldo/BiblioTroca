@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Daos\UserDao;
 use App\Errors\AppException;
 use App\Http\Controllers\Cases\UsersCases;
+use App\Models\UserLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;

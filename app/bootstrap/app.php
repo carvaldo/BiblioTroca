@@ -25,7 +25,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api([
             EnsureFrontendRequestsAreStateful::class,
             SubstituteBindings::class,
-            PlainTextDefaultContentType::class
         ])
             ->convertEmptyStringsToNull()
             ->throttleApi();

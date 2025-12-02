@@ -3,7 +3,9 @@
 namespace App\Daos;
 
 use App\Models\User;
+use App\Models\UserLog;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
 
 class UserDao
 {
@@ -24,5 +26,31 @@ class UserDao
             'email' => $fields['email'],
             'password' => $fields['password'],
         ]);
+    }
+
+    public function registerLogin(User $user): void
+    {
+        UserLog::create([
+            'user_id'    => $user->id,
+            'action'     => 'login',
+            'description'=> 'Realizou login.',
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'session_id' => session()->getId(),
+        ]);
+
+    }
+
+    public function registerLogout(User $user): void
+    {
+        UserLog::create([
+            'user_id'    => $user->id,
+            'action'     => 'login',
+            'description'=> 'Realizou logout.',
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'session_id' => session()->getId(),
+        ]);
+
     }
 }

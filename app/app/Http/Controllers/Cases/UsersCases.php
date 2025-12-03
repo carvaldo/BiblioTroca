@@ -28,7 +28,24 @@ class UsersCases
      */
     public function create(array $validated) {
         $user = $this->dao->create($validated);
+        $this->dao->registerAccountCreated($user);
         return $user->createToken('api-token')->plainTextToken;
+    }
+
+    /**
+     * @param $id
+     * @param array $validated
+     * @return Response|ResponseFactory
+     */
+    public function update($id, array $validated) {
+        $user = User::findOrFail($id);
+        // TODO: Validar se o usuário possui permissão para atualizar
+        if ($this->dao->update($user, $validated)) {
+            $this->dao->registerAccountUpdated($user);
+            return response()->setStatusCode(201, 'User updated successfully');
+        }
+        $this->dao->registerAccountUpdatFailed($user);
+        return response()->setStatusCode(400, 'User not updated');
     }
 
     /**

@@ -9,6 +9,6 @@ Route::prefix('users')->group(function () {
     Route::post('/authenticate', [UsersController::class, 'authenticate']); // Authenticate user
     // Authenticated routes
     Route::middleware('auth:sanctum')->group(function () {
-
+        Route::match(['patch', 'put'], '/{id}', [UsersController::class, 'update']);
     });
 });

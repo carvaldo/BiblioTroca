@@ -42,4 +42,17 @@ class UsersController extends Controller
             return response('Conteúdo inválido. Revise os campos e tente novamente.', 400);
         }
     }
+
+    public function update(Request $request, $id) {
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users',
+            ]);
+            return $this->cases->update($id, $validated);
+        } catch (ValidationException $e) {
+            Log::error($e->getMessage());
+            return response('Conteúdo inválido. Revise os campos e tente novamente.', 400);
+        }
+    }
 }

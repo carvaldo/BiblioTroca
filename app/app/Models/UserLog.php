@@ -13,6 +13,7 @@ class UserLog extends Model
 
     protected $fillable = [
         'user_id',
+        'doer_id',
         'action',
         'description',
         'ip_address',
@@ -24,6 +25,11 @@ class UserLog extends Model
     public function user(): BelongsTo|MongoDBBelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function doer(): BelongsTo|MongoDBBelongsTo
+    {
+        return $this->belongsTo(User::class, 'doer_id', 'id');
     }
 
     public function scopeLoginLogout($query)

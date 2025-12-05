@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Cases;
 
 use App\Daos\UserDao;
+use App\Errors\UpdateModelException;
 use App\Errors\Users\UserNotFoundException;
 use App\Errors\Users\WrongPasswordException;
 use App\Models\User;
@@ -10,6 +11,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class UsersCases
@@ -40,12 +42,17 @@ class UsersCases
     public function update($id, array $validated) {
         $user = User::findOrFail($id);
         // TODO: Validar se o usuário possui permissão para atualizar
-        if ($this->dao->update($user, $validated)) {
-            $this->dao->registerAccountUpdated($user);
-            return response()->setStatusCode(201, 'User updated successfully');
+        try {
+            $diff = $this->dao->update($user, $validated);
+            $this->dao->registerAccountUpdated($user, $diff);
+            return response()->noContent(201);
+        } catch (UpdateModelException $e) {
+            // TODO: Abstrair e registrar log de erro
+            Log::error($e->getMessage());
+            Log::error($e->getTraceAsString());
+            return response()->setStatusCode($e->getCode(), 'User not updated');
         }
-        $this->dao->registerAccountUpdatFailed($user);
-        return response()->setStatusCode(400, 'User not updated');
+
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Mixins\ModelDiff;
 use Database\Factories\UserFactory;
 use Eloquent;
 use Illuminate\Auth\MustVerifyEmail;
@@ -46,7 +47,7 @@ use Laravel\Sanctum\PersonalAccessToken;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens, MustVerifyEmail;
+    use HasFactory, Notifiable, HasApiTokens, MustVerifyEmail, ModelDiff;
 
     /**
      * The attributes that are mass assignable.

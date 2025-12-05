@@ -2,8 +2,10 @@
 
 namespace App\Daos;
 
+use App\Errors\UpdateModelException;
 use App\Models\User;
 use App\Models\UserLog;
+use App\TypeDefs\Diff;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
@@ -58,7 +60,7 @@ class UserDao
     {
         UserLog::create([
             'user_id'    => $user->id,
-            'doer_id'    => request()->user()->id,
+            'doer_id'    => request()->user()?->id,
             'action'     => 'create',
             'description'=> 'Conta cadastrada.',
             'ip_address' => request()->ip(),
@@ -67,13 +69,14 @@ class UserDao
         ]);
     }
 
-    public function registerAccountUpdated(User $user): void
+    public function registerAccountUpdated(User $user, Diff $diff): void
     {
+
         UserLog::create([
             'user_id'    => $user->id,
             'doer_id'    => request()->user()->id,
             'action'     => 'update',
-            'description'=> 'Conta atualizada.', // TODO: Registrar o que foi atualizado.
+            'description'=> 'Conta atualizada.' . PHP_EOL . $diff,
             'ip_address' => request()->ip(),
             'user_agent' => request()->header('User-Agent'),
             'session_id' => session()->getId(),
@@ -93,8 +96,18 @@ class UserDao
         ]);
     }
 
-    public function update(User $user, array $fields): bool
+    /**
+     * @param User $user
+     * @param array $fields
+     * @return Diff|null Retorna os dados alterados caso haja.
+     * @throws UpdateModelException Caso ocorra alguma falha ao atualizar a model.
+     */
+    public function update(User $user, array $fields): ?Diff
     {
-        return $user->update($fields);
+        $user->fill($fields);
+        $diff = $user->diff();
+        if (!$diff) return null;
+        if ($user->save()) return $diff;
+        throw new UpdateModelException("A atualização do usuário falhou.");
     }
 }

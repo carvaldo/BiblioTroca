@@ -51,7 +51,9 @@ class UsersController extends Controller
             ]);
             return $this->cases->update($id, $validated);
         } catch (ValidationException $e) {
+//            TODO: Abstrair e registrar log de erro
             Log::error($e->getMessage());
+            Log::error($e->getTraceAsString());
             return response('Conteúdo inválido. Revise os campos e tente novamente.', 400);
         }
     }

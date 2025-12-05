@@ -76,7 +76,7 @@ class UserDao
             'user_id'    => $user->id,
             'doer_id'    => request()->user()->id,
             'action'     => 'update',
-            'description'=> 'Conta atualizada.' . PHP_EOL . $diff,
+            'description'=> strval($diff),
             'ip_address' => request()->ip(),
             'user_agent' => request()->header('User-Agent'),
             'session_id' => session()->getId(),
